@@ -2,18 +2,20 @@ package fugo
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 )
 
 // TODO: ちゃんとする
-const googleFinanceAPI = "http://www.google.com/finance/getprices?p=1d&f=d,h,o,l,c,v&i=300&x=TYO&q=%s"
+// 現在、東京証券取引所のみ対応
+const googleFinanceAPI = "http://www.google.com/finance/info?infotype=infoquoteall&q=%s:%s"
 
 type Stock struct {
-	Code      int
-	Name      string
-	Price     int
-	UpdatedAt time.Time
+	Market       string
+	Code         string // Depending on the Market (f.g. Tokyo Stock Exchange provides number for Code)
+	Name         string
+	Price        int
+	ClosingPrice int
+	UpdatedAt    time.Time
 }
 
 func (stock *Stock) SetPrice(price int) {
@@ -22,5 +24,5 @@ func (stock *Stock) SetPrice(price int) {
 }
 
 func (stock *Stock) FetchURL() string {
-	return fmt.Sprintf(googleFinanceAPI, strconv.Itoa(stock.Code))
+	return fmt.Sprintf(googleFinanceAPI, stock.Market, stock.Code)
 }

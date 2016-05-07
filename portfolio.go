@@ -71,16 +71,17 @@ func (portfolio *Portfolio) saveToFile() {
 // defaultPortfolio stock's are selected and ordered by market capitalization
 func (portfolio *Portfolio) defaultPortfolio() *Portfolio {
 	portfolio.Stocks = []Stock{
-		{Code: 7203}, // トヨタ自動車(株)
-		{Code: 9437}, // (株)NTTドコモ
-		{Code: 9432}, // 日本電信電話(株)
-		{Code: 2914}, // JT
-		{Code: 9433}, // KDDI(株)
-		{Code: 8306}, // (株)三菱UFJフィナンシャル・グループ
-		{Code: 9984}, // ソフトバンク
-		{Code: 6178}, // 日本郵政(株)
-		{Code: 7182}, // (株)ゆうちょ銀行
-		{Code: 7267}, // ホンダ
+		{Market: "INDEXNIKKEI", Code: "NI225"}, // 日経平均
+		{Market: "TYO", Code: "7203"},          // トヨタ自動車(株)
+		{Market: "TYO", Code: "9437"},          // (株)NTTドコモ
+		{Market: "TYO", Code: "9432"},          // 日本電信電話(株)
+		{Market: "TYO", Code: "2914"},          // JT
+		{Market: "TYO", Code: "9433"},          // KDDI(株)
+		{Market: "TYO", Code: "8306"},          // (株)三菱UFJフィナンシャル・グループ
+		{Market: "TYO", Code: "9984"},          // ソフトバンク
+		{Market: "TYO", Code: "6178"},          // 日本郵政(株)
+		{Market: "TYO", Code: "7182"},          // (株)ゆうちょ銀行
+		{Market: "TYO", Code: "7267"},          // ホンダ
 	}
 	return portfolio
 }

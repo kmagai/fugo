@@ -13,8 +13,6 @@ func main() {
 	portfolio := fugo.GetPortfolio()
 	stocks_ch := portfolio.Update()
 
-	// TODO: 多分最初に前回のデータをどこかに保存しておいてそれを表示→アップデートというのが親切か
-	// TODO: とりあえず出力
 	for i := 0; i < len(portfolio.Stocks); i++ {
 		fmt.Println(<-stocks_ch)
 	}
