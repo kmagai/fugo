@@ -11,10 +11,9 @@ import (
 
 func main() {
 	portfolio := fugo.GetPortfolio()
-	stocks_ch := portfolio.Update()
-
-	for i := 0; i < len(portfolio.Stocks); i++ {
-		fmt.Println(<-stocks_ch)
+	portfolio = portfolio.Update()
+	for _, stock := range portfolio.Stocks {
+		// TODO: show formatted
+		fmt.Println(stock)
 	}
-
 }
