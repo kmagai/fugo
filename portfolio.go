@@ -130,6 +130,7 @@ func (portfolio *Portfolio) defaultPortfolio() *Portfolio {
 	return portfolio
 }
 
+// TODO: 酷い
 func (portfolio *Portfolio) PrintStocks() {
 	if len(portfolio.Stocks) > 0 {
 		for _, stock := range portfolio.Stocks {
@@ -138,7 +139,8 @@ func (portfolio *Portfolio) PrintStocks() {
 			priceColor := color.New(color.FgBlack, color.BgHiWhite, color.Bold)
 			priceChangeColor := color.New(color.FgBlack, color.Bold)
 			headColor.Printf(stock.Name+" (%s)\n", stock.Code)
-			fmt.Println(stock.UpdatedAt)
+			const layout = "2006-01-02 15:04:05"
+			fmt.Println(stock.UpdatedAt.Format(layout))
 			priceColor.Print(stock.Price)
 
 			if stock.Change > 0 {
