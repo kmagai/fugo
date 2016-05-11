@@ -1,10 +1,8 @@
 // fugo, meaning a rich man in Japanese, is yet another stock portfolio manager.
 package main
 
-import "github.com/kmagai/fugo"
+import "os"
 
 func main() {
-	portfolio := fugo.GetPortfolio()
-	portfolio = portfolio.Update()
-	portfolio.PrintStocks()
+	os.Exit(Run(os.Args[1:]))
 }

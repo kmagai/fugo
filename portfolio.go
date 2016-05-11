@@ -152,7 +152,7 @@ func (portfolio *Portfolio) PrintStocks() {
 			} else {
 				priceChangeColor.Print(color.BlueString("↓") + " ")
 				priceChangeColor.Print(roundAt(stock.Change, 2))
-				priceChangeColor.Print(" (")
+				priceChangeColor.Print("(")
 				priceChangeColor.Print(roundAt(stock.ChangePercent, 2))
 				priceChangeColor.Println("%)")
 			}
