@@ -60,7 +60,7 @@ func (portfolio *Portfolio) Update() *Portfolio {
 	}
 
 	for _, currentStock := range portfolio.Stocks {
-		if newStock, found := codeStockMap[currentStock.Code]; found {
+		if newStock, ok := codeStockMap[currentStock.Code]; ok {
 			newPortfolio.Stocks = append(newPortfolio.Stocks, newStock)
 		} else {
 			// make and return custom err
