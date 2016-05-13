@@ -3,6 +3,7 @@ package fugo
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -70,6 +71,27 @@ func (portfolio *Portfolio) Update() *Portfolio {
 	}
 	newPortfolio.saveToFile()
 	return &newPortfolio
+}
+
+// func (portfolio *Portfolio) RemoveStock(codeToRemove string) *Portfolio, error {
+func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
+	var newPortfolio Portfolio
+	var removedStock *Stock
+	var err error
+
+	for _, stock := range portfolio.Stocks {
+		if stock.Code == codeToRemove {
+			removedStock = &stock
+		} else {
+			newPortfolio.Stocks = append(newPortfolio.Stocks, stock)
+		}
+	}
+	if removedStock == nil {
+		err = errors.New("stock not found in your portfolio")
+	}
+	newPortfolio.saveToFile()
+
+	return removedStock, err
 }
 
 // Fetches stock price using Google Finance API

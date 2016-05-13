@@ -18,7 +18,7 @@ func Commands(style *subcmd.Style) map[string]cli.CommandFactory {
 			}, nil
 		},
 		"remove": func() (cli.Command, error) {
-			return &subcmd.Add{
+			return &subcmd.Remove{
 				Style: *style,
 			}, nil
 		},
