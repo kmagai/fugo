@@ -1,7 +1,6 @@
 package fugo
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,14 +18,6 @@ const googleFinanceAPI = "http://www.google.com/finance/info?infotype=infoquotea
 type Portfolio struct {
 	Stocks []Stock
 }
-
-// TODO: add portfolio from CLI
-// func AddStock()  {
-// }
-
-// TODO: remove from CLI
-// func RemoveStock()  {
-// }
 
 func GetPortfolio() *Portfolio {
 	portfolio := &Portfolio{}
@@ -51,8 +42,18 @@ func (portfolio *Portfolio) fileName() string {
 }
 
 func (portfolio *Portfolio) Update() *Portfolio {
-	stockJSON := portfolio.fetch()
-	newStocks := portfolio.parseToStock(stockJSON)
+	res, err := http.Get(buildFetchURL(buildQuery(portfolio.Stocks)))
+	if err != nil {
+		fmt.Println("Failed to Fetch: " + err.Error())
+	}
+
+	stockJSON, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
+	}
+
+	stockJSON = []byte(string(stockJSON)[3:]) // trim '//'
+	newStocks := ParseToStocks(stockJSON)
 
 	var newPortfolio Portfolio
 	codeStockMap := make(map[string]Stock)
@@ -88,30 +89,39 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 	}
 	if removedStock == nil {
 		err = errors.New("stock not found in your portfolio")
+		return removedStock, err
 	}
 	newPortfolio.saveToFile()
 
 	return removedStock, err
 }
 
-// Fetches stock price using Google Finance API
-func (portfolio *Portfolio) fetch() []byte {
-	res, err := http.Get(portfolio.buildFetchURL())
-	if err != nil {
-		fmt.Println("Failed to Fetch: " + err.Error())
-	}
-	dat, _ := ioutil.ReadAll(res.Body)
-	return dat
-}
+func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
+	var newPortfolio Portfolio
+	var addedStocks *[]Stock
+	var err error
 
-func (portfolio *Portfolio) parseToStock(stockJson []byte) *[]Stock {
-	// Parse JSON from remote
-	stockJsonString := string(stockJson)[3:] // skip '//' chars
-	s := bytes.NewReader([]byte(stockJsonString))
-	var newStockData *[]Stock
-	dec := json.NewDecoder(s)
-	dec.Decode(&newStockData)
-	return newStockData
+	res, err := http.Get(buildFetchURL(codeToAdd))
+	if err != nil {
+		fmt.Println("Couldn't find any stock. You should check your code: " + err.Error())
+		return addedStocks, err
+	}
+
+	stockJSON, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
+		return addedStocks, err
+	}
+	fmt.Println(string(stockJSON))
+
+	stockJSON = []byte(string(stockJSON)[3:]) // trim '//'
+	addedStocks = ParseToStocks(stockJSON)
+	if addedStocks != nil {
+		newPortfolio.Stocks = append(portfolio.Stocks, *addedStocks...)
+		newPortfolio.saveToFile()
+	}
+
+	return addedStocks, err
 }
 
 func (portfolio *Portfolio) saveToFile() {
@@ -124,12 +134,16 @@ func (portfolio *Portfolio) saveToFile() {
 	return
 }
 
-func (portfolio *Portfolio) buildFetchURL() string {
-	var stockCodes string
-	for _, stock := range portfolio.Stocks {
-		stockCodes += stock.Code + ","
+func buildFetchURL(query string) string {
+	return fmt.Sprintf(googleFinanceAPI, query)
+}
+
+func buildQuery(stocks []Stock) string {
+	var query string
+	for _, stock := range stocks {
+		query += stock.Code + ","
 	}
-	return fmt.Sprintf(googleFinanceAPI, stockCodes)
+	return query
 }
 
 // defaultPortfolio stock's are selected and ordered by market capitalization

@@ -20,7 +20,7 @@ func (c *Check) Run(args []string) int {
 }
 
 func (c *Check) Synopsis() string {
-	return fmt.Sprint("check your portfolio")
+	return fmt.Sprint("Check stock data in your portfolio")
 }
 
 func (c *Check) Help() string {

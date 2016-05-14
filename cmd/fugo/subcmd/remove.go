@@ -26,7 +26,7 @@ func (c *Remove) Run(args []string) int {
 }
 
 func (c *Remove) Synopsis() string {
-	return "Sub-command"
+	return "Remove stock from your portfolio"
 }
 
 func (c *Remove) Help() string {

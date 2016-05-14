@@ -40,7 +40,7 @@ func RunCustom(args []string, commands map[string]cli.CommandFactory) int {
 		}
 	}
 
-	// Default to check
+	// default action to check
 	if len(args) == 0 {
 		checkArg := make([]string, 1)
 		checkArg[0] = "check"
