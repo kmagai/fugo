@@ -13,7 +13,6 @@ import (
 )
 
 const fugorc = `/.fugorc`
-const googleFinanceAPI = "http://www.google.com/finance/info?infotype=infoquoteall&q=%s"
 
 type Portfolio struct {
 	Stocks []Stock
@@ -52,8 +51,7 @@ func (portfolio *Portfolio) Update() *Portfolio {
 		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
 	}
 
-	stockJSON = []byte(string(stockJSON)[3:]) // trim '//'
-	newStocks := ParseToStocks(stockJSON)
+	newStocks := ParseToStocks(trimSlashes(stockJSON))
 
 	var newPortfolio Portfolio
 	codeStockMap := make(map[string]Stock)
@@ -114,8 +112,7 @@ func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	}
 	fmt.Println(string(stockJSON))
 
-	stockJSON = []byte(string(stockJSON)[3:]) // trim '//'
-	addedStocks = ParseToStocks(stockJSON)
+	addedStocks = ParseToStocks(trimSlashes(stockJSON))
 	if addedStocks != nil {
 		newPortfolio.Stocks = append(portfolio.Stocks, *addedStocks...)
 		newPortfolio.saveToFile()
@@ -132,18 +129,6 @@ func (portfolio *Portfolio) saveToFile() {
 
 	ioutil.WriteFile(portfolio.fileName(), dat, 0644)
 	return
-}
-
-func buildFetchURL(query string) string {
-	return fmt.Sprintf(googleFinanceAPI, query)
-}
-
-func buildQuery(stocks []Stock) string {
-	var query string
-	for _, stock := range stocks {
-		query += stock.Code + ","
-	}
-	return query
 }
 
 // defaultPortfolio stock's are selected and ordered by market capitalization
