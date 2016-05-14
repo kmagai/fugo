@@ -3,6 +3,7 @@ package fugo
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"time"
 )
 
@@ -16,10 +17,14 @@ type Stock struct {
 }
 
 // parse JSON from the API
-func ParseToStocks(stockJson []byte) *[]Stock {
+func ParseToStocks(stockJson []byte) (*[]Stock, error) {
 	s := bytes.NewReader(stockJson)
 	var newStockData *[]Stock
 	dec := json.NewDecoder(s)
 	dec.Decode(&newStockData)
-	return newStockData
+	if newStockData == nil {
+		return nil, errors.New("failed to parse stock")
+	} else {
+		return newStockData, nil
+	}
 }

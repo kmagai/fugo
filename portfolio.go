@@ -51,7 +51,11 @@ func (portfolio *Portfolio) Update() *Portfolio {
 		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
 	}
 
-	newStocks := ParseToStocks(trimSlashes(stockJSON))
+	newStocks, err := ParseToStocks(trimSlashes(stockJSON))
+	if err != nil {
+		fmt.Println("couldn't parse it!")
+		return portfolio
+	}
 
 	var newPortfolio Portfolio
 	codeStockMap := make(map[string]Stock)
@@ -96,29 +100,49 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 
 func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	var newPortfolio Portfolio
-	var addedStocks *[]Stock
 	var err error
 
 	res, err := http.Get(buildFetchURL(codeToAdd))
 	if err != nil {
 		fmt.Println("Couldn't find any stock. You should check your code: " + err.Error())
-		return addedStocks, err
+		return nil, err
 	}
 
 	stockJSON, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
-		return addedStocks, err
+		return nil, err
 	}
 	fmt.Println(string(stockJSON))
 
-	addedStocks = ParseToStocks(trimSlashes(stockJSON))
-	if addedStocks != nil {
-		newPortfolio.Stocks = append(portfolio.Stocks, *addedStocks...)
-		newPortfolio.saveToFile()
+	newStocks, err := ParseToStocks(trimSlashes(stockJSON))
+	if err != nil {
+		return nil, err
 	}
 
-	return addedStocks, err
+	if duplicated := portfolio.hasDuplicate(newStocks); duplicated {
+		fmt.Println("You have already had it in your portfolio")
+		return nil, err
+	}
+
+	newPortfolio.Stocks = append(portfolio.Stocks, *newStocks...)
+	newPortfolio.saveToFile()
+
+	return newStocks, err
+}
+
+func (portfolio *Portfolio) hasDuplicate(stocks *[]Stock) bool {
+	portfolioMap := make(map[string]Stock)
+	for _, s := range portfolio.Stocks {
+		portfolioMap[s.Code] = s
+	}
+
+	for _, s := range *stocks {
+		if _, found := portfolioMap[s.Code]; found {
+			return true
+		}
+	}
+	return false
 }
 
 func (portfolio *Portfolio) saveToFile() {
@@ -146,7 +170,6 @@ func (portfolio *Portfolio) defaultPortfolio() *Portfolio {
 		{Code: "6178"},  // 日本郵政(株)
 		{Code: "7182"},  // (株)ゆうちょ銀行
 		{Code: "7267"},  // ホンダ
-		{Code: "7606"},  // ユナイテッドアローズ
 	}
 	return portfolio
 }

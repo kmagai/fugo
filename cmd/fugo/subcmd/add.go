@@ -15,7 +15,7 @@ func (c *Add) Run(args []string) int {
 	stockToAdd := args[0]
 	portfolio := fugo.GetPortfolio()
 	added, err := portfolio.AddStock(stockToAdd)
-	if err != nil {
+	if err != nil || added == nil {
 		fmt.Println("Failed to add the stock")
 		return 1
 	} else {
