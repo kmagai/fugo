@@ -13,15 +13,17 @@ type Add struct {
 
 func (c *Add) Run(args []string) int {
 	stockToAdd := args[0]
-	portfolio := fugo.GetPortfolio()
+	portfolio, err := fugo.GetPortfolio()
+	if err != nil {
+		return 1
+	}
 	added, err := portfolio.AddStock(stockToAdd)
 	if err != nil || added == nil {
 		fmt.Println("Failed to add the stock")
 		return 1
-	} else {
-		// TODO: need better printing
-		fmt.Printf("Successfully added: %s", added)
 	}
+	// TODO: need better printing
+	fmt.Printf("Successfully added: %s", added)
 	return 0
 }
 

@@ -18,62 +18,53 @@ type Portfolio struct {
 	Stocks []Stock
 }
 
-func GetPortfolio() *Portfolio {
+func GetPortfolio() (*Portfolio, error) {
 	portfolio := &Portfolio{}
 	dat, err := ioutil.ReadFile(portfolio.fileName())
 	if err != nil {
 		portfolio := portfolio.defaultPortfolio()
-		portfolio.saveToFile()
+		err = portfolio.saveToFile()
 	} else {
-		json.Unmarshal(dat, portfolio)
+		err = json.Unmarshal(dat, portfolio)
 	}
 
-	return portfolio
+	return portfolio, err
 }
 
-func (portfolio *Portfolio) fileName() string {
-	usr, err := user.Current()
-	if err != nil {
-		panic(err)
-	}
-
-	return usr.HomeDir + fugorc
-}
-
-func (portfolio *Portfolio) Update() *Portfolio {
+func (portfolio *Portfolio) Update() (*Portfolio, error) {
 	res, err := http.Get(buildFetchURL(buildQuery(portfolio.Stocks)))
 	if err != nil {
 		fmt.Println("Failed to Fetch: " + err.Error())
+		return portfolio, nil
 	}
 
 	stockJSON, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
+		return portfolio, nil
 	}
 
 	newStocks, err := ParseToStocks(trimSlashes(stockJSON))
 	if err != nil {
 		fmt.Println("couldn't parse it!")
-		return portfolio
+		return portfolio, err
 	}
 
 	var newPortfolio Portfolio
 	codeStockMap := make(map[string]Stock)
-	for _, newStock := range *newStocks {
-		codeStockMap[newStock.Code] = newStock
+	for _, s := range *newStocks {
+		codeStockMap[s.Code] = s
 	}
 
-	for _, currentStock := range portfolio.Stocks {
-		if newStock, ok := codeStockMap[currentStock.Code]; ok {
+	for _, s := range portfolio.Stocks {
+		if newStock, ok := codeStockMap[s.Code]; ok {
 			newPortfolio.Stocks = append(newPortfolio.Stocks, newStock)
 		} else {
-			// make and return custom err
-			fmt.Println("Not found in remote")
-			fmt.Println("Misconfigured?")
+			return portfolio, errors.New("Stock data not found in remote")
 		}
 	}
-	newPortfolio.saveToFile()
-	return &newPortfolio
+	err = newPortfolio.saveToFile()
+	return &newPortfolio, nil
 }
 
 // func (portfolio *Portfolio) RemoveStock(codeToRemove string) *Portfolio, error {
@@ -93,7 +84,7 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 		err = errors.New("stock not found in your portfolio")
 		return removedStock, err
 	}
-	newPortfolio.saveToFile()
+	err = newPortfolio.saveToFile()
 
 	return removedStock, err
 }
@@ -126,8 +117,7 @@ func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	}
 
 	newPortfolio.Stocks = append(portfolio.Stocks, *newStocks...)
-	newPortfolio.saveToFile()
-
+	err = newPortfolio.saveToFile()
 	return newStocks, err
 }
 
@@ -145,14 +135,22 @@ func (portfolio *Portfolio) hasDuplicate(stocks *[]Stock) bool {
 	return false
 }
 
-func (portfolio *Portfolio) saveToFile() {
+func (portfolio *Portfolio) saveToFile() (err error) {
 	dat, err := json.Marshal(portfolio)
+	if err != nil {
+		return
+	}
+	ioutil.WriteFile(portfolio.fileName(), dat, 0644)
+	return
+}
+
+func (portfolio *Portfolio) fileName() string {
+	usr, err := user.Current()
 	if err != nil {
 		panic(err)
 	}
 
-	ioutil.WriteFile(portfolio.fileName(), dat, 0644)
-	return
+	return usr.HomeDir + fugorc
 }
 
 // defaultPortfolio stock's are selected and ordered by market capitalization

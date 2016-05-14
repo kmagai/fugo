@@ -12,8 +12,14 @@ type Check struct {
 }
 
 func (c *Check) Run(args []string) int {
-	portfolio := fugo.GetPortfolio()
-	portfolio = portfolio.Update()
+	portfolio, err := fugo.GetPortfolio()
+	if err != nil {
+		return 1
+	}
+	portfolio, err = portfolio.Update()
+	if err != nil {
+		return 1
+	}
 	portfolio.PrintStocks()
 
 	return 0

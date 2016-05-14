@@ -14,7 +14,10 @@ type Remove struct {
 // Run to remove a stock specified with stock code
 func (c *Remove) Run(args []string) int {
 	stockToRemove := args[0]
-	portfolio := fugo.GetPortfolio()
+	portfolio, err := fugo.GetPortfolio()
+	if err != nil {
+		return 1
+	}
 	removed, err := portfolio.RemoveStock(stockToRemove)
 	if err != nil {
 		fmt.Println("Couldn't find the stock in your portfolio")
