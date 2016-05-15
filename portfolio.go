@@ -14,9 +14,14 @@ type Portfolio struct {
 	Stocks []Stock
 }
 
+// GetPortfolio makes portfolio struct from fugorc
 func GetPortfolio() (*Portfolio, error) {
 	portfolio := &Portfolio{}
-	dat, err := ioutil.ReadFile(portfolio.fileName())
+	defaultName, err := portfolio.defaultFilePath()
+	if err != nil {
+		return portfolio, err
+	}
+	dat, err := ioutil.ReadFile(defaultName)
 	if err != nil {
 		portfolio := portfolio.defaultPortfolio()
 		err = portfolio.saveToFile()
@@ -27,23 +32,11 @@ func GetPortfolio() (*Portfolio, error) {
 	return portfolio, err
 }
 
+// Update updates portfolio with remote API
 func (portfolio *Portfolio) Update() (*Portfolio, error) {
-	res, err := http.Get(buildFetchURL(buildQuery(portfolio.Stocks)))
+	newStocks, err := getRemoteStock(portfolio.Stocks)
 	if err != nil {
-		err = errors.New("failed to fetch")
-		return portfolio, nil
-	}
-
-	stockJSON, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		err = errors.New("couldn't properly read response. It could be a problem with a remote host")
-		return portfolio, nil
-	}
-
-	newStocks, err := ParseToStocks(trimSlashes(stockJSON))
-	if err != nil {
-		err = errors.New("Couldn't properly read the response. It could be a problem with a remote host")
-		return portfolio, err
+		return portfolio, errors.New("Couldn't properly read the response. It could be a problem with a remote host")
 	}
 
 	var newPortfolio Portfolio
@@ -63,7 +56,7 @@ func (portfolio *Portfolio) Update() (*Portfolio, error) {
 	return &newPortfolio, nil
 }
 
-// func (portfolio *Portfolio) RemoveStock(codeToRemove string) *Portfolio, error {
+// RemoveStock tries to removes stock from portfolio by the code like 'AAPL', '1234' etc
 func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 	var newPortfolio Portfolio
 	var removedStock *Stock
@@ -77,39 +70,25 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 		}
 	}
 	if removedStock == nil {
-		err = errors.New("stock not found in your portfolio")
-		return removedStock, err
+		return removedStock, errors.New("stock not found in your portfolio")
 	}
 	err = newPortfolio.saveToFile()
 
 	return removedStock, err
 }
 
+// AddStock tries to add stocks to portfolio by the code like 'AAPL', '1234' etc
 func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	var newPortfolio Portfolio
 	var err error
 
-	res, err := http.Get(buildFetchURL(codeToAdd))
+	newStocks, err := getRemoteStock(codeToAdd)
 	if err != nil {
-		err = errors.New("Couldn't find any stock. You should check your code")
-		return nil, err
-	}
-
-	stockJSON, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		err = errors.New("Couldn't properly read response. It could be a problem with a remote host")
-		return nil, err
-	}
-
-	newStocks, err := ParseToStocks(trimSlashes(stockJSON))
-	if err != nil {
-		err = errors.New("Couldn't properly read the response. It could be a problem with a remote host")
-		return nil, err
+		return newStocks, errors.New("Couldn't properly read the response. It could be a problem with either the remote host or your typo")
 	}
 
 	if duplicated := portfolio.hasDuplicate(newStocks); duplicated {
-		err = errors.New("You have already had it in your portfolio")
-		return nil, err
+		return nil, errors.New("You have already had it in your portfolio")
 	}
 
 	newPortfolio.Stocks = append(portfolio.Stocks, *newStocks...)
@@ -117,6 +96,30 @@ func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	return newStocks, err
 }
 
+// getRemoteStock gets stock struct from remote
+func getRemoteStock(stocks interface{}) (*[]Stock, error) {
+	var query string
+	switch s := stocks.(type) {
+	case string:
+		query = s
+	case []Stock:
+		query = buildQuery(s)
+	}
+
+	res, err := http.Get(buildFetchURL(query))
+	if err != nil {
+		return nil, errors.New("failed to fetch")
+	}
+
+	stockJSON, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, errors.New("couldn't properly read response. It could be a problem with a remote host")
+	}
+
+	return ParseToStocks(trimSlashes(stockJSON))
+}
+
+// hasDuplicate return true if portfolio has any stock
 func (portfolio *Portfolio) hasDuplicate(stocks *[]Stock) bool {
 	portfolioMap := make(map[string]Stock)
 	for _, s := range portfolio.Stocks {
@@ -131,39 +134,38 @@ func (portfolio *Portfolio) hasDuplicate(stocks *[]Stock) bool {
 	return false
 }
 
-func (portfolio *Portfolio) saveToFile() (err error) {
+// saveToFile saves portfolio struct into fugorc
+func (portfolio *Portfolio) saveToFile() error {
 	dat, err := json.Marshal(portfolio)
 	if err != nil {
-		return
+		return err
 	}
-	ioutil.WriteFile(portfolio.fileName(), dat, 0644)
-	return
+	defaultName, err := portfolio.defaultFilePath()
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(defaultName, dat, 0644)
+	return err
 }
 
-func (portfolio *Portfolio) fileName() string {
+// defaultFilePath is ~/.fugorc
+func (portfolio *Portfolio) defaultFilePath() (string, error) {
 	usr, err := user.Current()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	return usr.HomeDir + fugorc
+	return usr.HomeDir + fugorc, err
 }
 
-// defaultPortfolio stock's are selected and ordered by market capitalization
+// defaultPortfolio stock's are selected arbitrary
 func (portfolio *Portfolio) defaultPortfolio() *Portfolio {
 	portfolio.Stocks = []Stock{
-		{Code: "AAPL"},  // Apple Inc.
 		{Code: "NI225"}, // 日経平均
 		{Code: "7203"},  // トヨタ自動車(株)
-		{Code: "9437"},  // (株)NTTドコモ
-		{Code: "9432"},  // 日本電信電話(株)
-		{Code: "2914"},  // JT
-		{Code: "9433"},  // KDDI(株)
-		{Code: "8306"},  // (株)三菱UFJフィナンシャル・グループ
 		{Code: "9984"},  // ソフトバンク
 		{Code: "6178"},  // 日本郵政(株)
-		{Code: "7182"},  // (株)ゆうちょ銀行
-		{Code: "7267"},  // ホンダ
+		{Code: "AAPL"},  // Apple Inc.
 	}
 	return portfolio
 }

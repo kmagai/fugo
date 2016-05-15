@@ -8,11 +8,6 @@ import (
 	"github.com/mitchellh/cli"
 )
 
-const (
-	ExitCodeOK = iota
-	ExitCodeParseFlagError
-)
-
 func Run(args []string) int {
 	style := &subcmd.Style{
 		Ui: &cli.ColoredUi{

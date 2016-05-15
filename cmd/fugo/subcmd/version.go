@@ -3,6 +3,9 @@ package subcmd
 import (
 	"bytes"
 	"fmt"
+	"strings"
+
+	"github.com/kmagai/fugo/cmd/fugo/common"
 )
 
 type VersionCommand struct {
@@ -22,7 +25,7 @@ func (c *VersionCommand) Run(args []string) int {
 	}
 
 	c.Ui.Output(versionString.String())
-	return 0
+	return common.ExitCodeOK
 }
 
 func (c *VersionCommand) Synopsis() string {
@@ -30,5 +33,8 @@ func (c *VersionCommand) Synopsis() string {
 }
 
 func (c *VersionCommand) Help() string {
-	return ""
+	helpText := `
+	fugo help
+`
+	return strings.TrimSpace(helpText)
 }

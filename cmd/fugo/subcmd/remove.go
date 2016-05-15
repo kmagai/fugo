@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kmagai/fugo"
+	"github.com/kmagai/fugo/cmd/fugo/common"
 )
 
 type Remove struct {
@@ -17,16 +18,16 @@ func (c *Remove) Run(args []string) int {
 	portfolio, err := fugo.GetPortfolio()
 	if err != nil {
 		fmt.Println(err)
-		return 1
+		return common.ExitCodeError
 	}
 	removed, err := portfolio.RemoveStock(stockToRemove)
 	if err != nil {
 		fmt.Println(err)
-		return 1
+		return common.ExitCodeError
 	}
 	// TODO: need better printing
 	fmt.Printf("removed: %s", removed)
-	return 0
+	return common.ExitCodeOK
 }
 
 func (c *Remove) Synopsis() string {
@@ -35,7 +36,7 @@ func (c *Remove) Synopsis() string {
 
 func (c *Remove) Help() string {
 	helpText := `
-
+	fugo remove [CODE]
 `
 	return strings.TrimSpace(helpText)
 }

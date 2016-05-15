@@ -1,11 +1,10 @@
-package utils
+package common
 
 import (
 	"math"
 
 	"github.com/fatih/color"
 	"github.com/kmagai/fugo"
-	"github.com/mitchellh/cli"
 )
 
 var (
@@ -15,15 +14,16 @@ var (
 	priceChangeColor = color.New(color.FgBlack, color.Bold)
 )
 
-func PrintStocks(portfolio *fugo.Portfolio) {
+func ShowPortfolio(portfolio *fugo.Portfolio) {
 	if len(portfolio.Stocks) > 0 {
 		for _, stock := range portfolio.Stocks {
 			printStock(stock)
 			defaultColor.Println("\n")
 		}
 	} else {
-		defaultColor.Println("Nothing to print!")
-		defaultColor.Println(cli.BasicHelpFunc("fugo"))
+		defaultColor.Println("No stock data found")
+		defaultColor.Println("You may need to add stock to your portfolio")
+		defaultColor.Println("add it like `fugo add [CODE]`")
 	}
 }
 

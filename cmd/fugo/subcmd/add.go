@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kmagai/fugo"
+	"github.com/kmagai/fugo/cmd/fugo/common"
 )
 
 type Add struct {
@@ -16,16 +17,17 @@ func (c *Add) Run(args []string) int {
 	portfolio, err := fugo.GetPortfolio()
 	if err != nil {
 		fmt.Println(err)
-		return 1
+		return common.ExitCodeError
 	}
+
 	added, err := portfolio.AddStock(stockToAdd)
-	if err != nil || added == nil {
+	if err != nil {
 		fmt.Println(err)
-		return 1
+		return common.ExitCodeError
 	}
 	// TODO: need better printing
 	fmt.Printf("Successfully added: %s", added)
-	return 0
+	return common.ExitCodeOK
 }
 
 func (c *Add) Synopsis() string {
@@ -34,7 +36,7 @@ func (c *Add) Synopsis() string {
 
 func (c *Add) Help() string {
 	helpText := `
-
+	fugo add [CODE]
 `
 	return strings.TrimSpace(helpText)
 }

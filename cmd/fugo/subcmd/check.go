@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/kmagai/fugo"
-	"github.com/kmagai/fugo/cmd/fugo/utils"
+	"github.com/kmagai/fugo/cmd/fugo/common"
 )
 
 type Check struct {
@@ -16,16 +16,16 @@ func (c *Check) Run(args []string) int {
 	portfolio, err := fugo.GetPortfolio()
 	if err != nil {
 		fmt.Println(err)
-		return 1
+		return common.ExitCodeError
 	}
 	portfolio, err = portfolio.Update()
 	if err != nil {
 		fmt.Println(err)
-		return 1
+		return common.ExitCodeError
 	}
-	utils.PrintStocks(portfolio)
+	common.ShowPortfolio(portfolio)
 
-	return 0
+	return common.ExitCodeOK
 }
 
 func (c *Check) Synopsis() string {
@@ -34,6 +34,9 @@ func (c *Check) Synopsis() string {
 
 func (c *Check) Help() string {
 	helpText := `
+	fugo check
+	or
+	fugo
 `
 	return strings.TrimSpace(helpText)
 }
