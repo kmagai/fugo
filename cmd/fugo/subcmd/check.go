@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/kmagai/fugo"
+	"github.com/kmagai/fugo/cmd/fugo/utils"
 )
 
 type Check struct {
@@ -20,7 +21,7 @@ func (c *Check) Run(args []string) int {
 	if err != nil {
 		return 1
 	}
-	portfolio.PrintStocks()
+	utils.PrintStocks(portfolio)
 
 	return 0
 }
