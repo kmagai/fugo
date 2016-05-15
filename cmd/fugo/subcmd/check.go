@@ -15,10 +15,12 @@ type Check struct {
 func (c *Check) Run(args []string) int {
 	portfolio, err := fugo.GetPortfolio()
 	if err != nil {
+		fmt.Println(err)
 		return 1
 	}
 	portfolio, err = portfolio.Update()
 	if err != nil {
+		fmt.Println(err)
 		return 1
 	}
 	utils.PrintStocks(portfolio)

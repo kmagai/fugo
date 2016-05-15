@@ -15,11 +15,12 @@ func (c *Add) Run(args []string) int {
 	stockToAdd := args[0]
 	portfolio, err := fugo.GetPortfolio()
 	if err != nil {
+		fmt.Println(err)
 		return 1
 	}
 	added, err := portfolio.AddStock(stockToAdd)
 	if err != nil || added == nil {
-		fmt.Println("Failed to add the stock")
+		fmt.Println(err)
 		return 1
 	}
 	// TODO: need better printing

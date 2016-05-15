@@ -16,11 +16,12 @@ func (c *Remove) Run(args []string) int {
 	stockToRemove := args[0]
 	portfolio, err := fugo.GetPortfolio()
 	if err != nil {
+		fmt.Println(err)
 		return 1
 	}
 	removed, err := portfolio.RemoveStock(stockToRemove)
 	if err != nil {
-		fmt.Println("Couldn't find the stock in your portfolio")
+		fmt.Println(err)
 		return 1
 	}
 	// TODO: need better printing

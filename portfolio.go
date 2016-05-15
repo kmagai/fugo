@@ -3,7 +3,6 @@ package fugo
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os/user"
@@ -31,19 +30,19 @@ func GetPortfolio() (*Portfolio, error) {
 func (portfolio *Portfolio) Update() (*Portfolio, error) {
 	res, err := http.Get(buildFetchURL(buildQuery(portfolio.Stocks)))
 	if err != nil {
-		fmt.Println("Failed to Fetch: " + err.Error())
+		err = errors.New("failed to fetch")
 		return portfolio, nil
 	}
 
 	stockJSON, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
+		err = errors.New("couldn't properly read response. It could be a problem with a remote host")
 		return portfolio, nil
 	}
 
 	newStocks, err := ParseToStocks(trimSlashes(stockJSON))
 	if err != nil {
-		fmt.Println("couldn't parse it!")
+		err = errors.New("Couldn't properly read the response. It could be a problem with a remote host")
 		return portfolio, err
 	}
 
@@ -92,24 +91,24 @@ func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 
 	res, err := http.Get(buildFetchURL(codeToAdd))
 	if err != nil {
-		fmt.Println("Couldn't find any stock. You should check your code: " + err.Error())
+		err = errors.New("Couldn't find any stock. You should check your code")
 		return nil, err
 	}
 
 	stockJSON, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println("Couldn't properly read response. It could be a problem with a remote host: " + err.Error())
+		err = errors.New("Couldn't properly read response. It could be a problem with a remote host")
 		return nil, err
 	}
-	fmt.Println(string(stockJSON))
 
 	newStocks, err := ParseToStocks(trimSlashes(stockJSON))
 	if err != nil {
+		err = errors.New("Couldn't properly read the response. It could be a problem with a remote host")
 		return nil, err
 	}
 
 	if duplicated := portfolio.hasDuplicate(newStocks); duplicated {
-		fmt.Println("You have already had it in your portfolio")
+		err = errors.New("You have already had it in your portfolio")
 		return nil, err
 	}
 

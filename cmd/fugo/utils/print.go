@@ -5,6 +5,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/kmagai/fugo"
+	"github.com/mitchellh/cli"
 )
 
 var (
@@ -22,7 +23,7 @@ func PrintStocks(portfolio *fugo.Portfolio) {
 		}
 	} else {
 		defaultColor.Println("Nothing to print!")
-		defaultColor.Println("TODO: SHOW HELP MESSAGE HERE")
+		defaultColor.Println(cli.BasicHelpFunc("fugo"))
 	}
 }
 
