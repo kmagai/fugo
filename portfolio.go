@@ -62,18 +62,17 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 	var removedStock *Stock
 	var err error
 
-	for _, stock := range portfolio.Stocks {
-		if stock.Code == codeToRemove {
-			removedStock = &stock
+	for i, _ := range portfolio.Stocks {
+		if portfolio.Stocks[i].Code == codeToRemove {
+			removedStock = &portfolio.Stocks[i]
 		} else {
-			newPortfolio.Stocks = append(newPortfolio.Stocks, stock)
+			newPortfolio.Stocks = append(newPortfolio.Stocks, portfolio.Stocks[i])
 		}
 	}
 	if removedStock == nil {
 		return removedStock, errors.New("stock not found in your portfolio")
 	}
 	err = newPortfolio.saveToFile()
-
 	return removedStock, err
 }
 
