@@ -2,6 +2,7 @@ package subcmd
 
 import (
 	"fmt"
+	"os/user"
 	"strings"
 
 	"github.com/kmagai/fugo"
@@ -14,7 +15,19 @@ type Add struct {
 
 func (c *Add) Run(args []string) int {
 	stockToAdd := args[0]
-	portfolio, err := fugo.GetPortfolio()
+
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println(err)
+		return common.ExitCodeError
+	}
+	portfolio := &fugo.Portfolio{}
+	portfolio = portfolio.SetPortfolioFilePath(usr.HomeDir, fugo.Fugorc)
+	portfolio, err = portfolio.GetPortfolio()
+	if err != nil {
+		fmt.Println(err)
+		portfolio, err = portfolio.SetDefaultPortfolio()
+	}
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError

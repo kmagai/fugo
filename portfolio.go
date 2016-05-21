@@ -5,30 +5,30 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"os/user"
 )
 
-const fugorc = `/.fugorc`
+const Fugorc = `/.fugorc`
 
 type Portfolio struct {
 	Stocks []Stock
+	path   string
+}
+
+// SetPortfolioFilePath returns portfolio setting file path
+func (portfolio *Portfolio) SetPortfolioFilePath(dirname string, filename string) *Portfolio {
+	portfolio.path = dirname + filename
+
+	return portfolio
 }
 
 // GetPortfolio makes portfolio struct from fugorc
-func GetPortfolio() (*Portfolio, error) {
-	portfolio := &Portfolio{}
-	defaultName, err := portfolio.defaultFilePath()
+func (portfolio *Portfolio) GetPortfolio() (*Portfolio, error) {
+	dat, err := ioutil.ReadFile(portfolio.path)
 	if err != nil {
-		return portfolio, err
-	}
-	dat, err := ioutil.ReadFile(defaultName)
-	if err != nil {
-		portfolio := portfolio.defaultPortfolio()
-		err = portfolio.saveToFile()
-	} else {
-		err = json.Unmarshal(dat, portfolio)
+		return portfolio, errors.New("portfolio file not found")
 	}
 
+	err = json.Unmarshal(dat, portfolio)
 	return portfolio, err
 }
 
@@ -72,6 +72,7 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 	if removedStock == nil {
 		return removedStock, errors.New("stock not found in your portfolio")
 	}
+	newPortfolio.path = portfolio.path
 	err = newPortfolio.saveToFile()
 	return removedStock, err
 }
@@ -89,10 +90,23 @@ func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	if duplicated := portfolio.hasDuplicate(newStocks); duplicated {
 		return nil, errors.New("You have already had it in your portfolio")
 	}
-
+	newPortfolio.path = portfolio.path
 	newPortfolio.Stocks = append(portfolio.Stocks, *newStocks...)
 	err = newPortfolio.saveToFile()
 	return newStocks, err
+}
+
+// defaultPortfolio stock's are selected arbitrary
+func (portfolio *Portfolio) SetDefaultPortfolio() (*Portfolio, error) {
+	portfolio.Stocks = []Stock{
+		{Code: "NI225"}, // 日経平均
+		{Code: "7203"},  // トヨタ自動車(株)
+		{Code: "9984"},  // ソフトバンク
+		{Code: "6178"},  // 日本郵政(株)
+		{Code: "AAPL"},  // Apple Inc.
+	}
+	err := portfolio.saveToFile()
+	return portfolio, err
 }
 
 // getRemoteStock gets stock struct from remote
@@ -139,32 +153,6 @@ func (portfolio *Portfolio) saveToFile() error {
 	if err != nil {
 		return err
 	}
-	defaultName, err := portfolio.defaultFilePath()
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(defaultName, dat, 0644)
+	err = ioutil.WriteFile(portfolio.path, dat, 0644)
 	return err
-}
-
-// defaultFilePath is ~/.fugorc
-func (portfolio *Portfolio) defaultFilePath() (string, error) {
-	usr, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-
-	return usr.HomeDir + fugorc, err
-}
-
-// defaultPortfolio stock's are selected arbitrary
-func (portfolio *Portfolio) defaultPortfolio() *Portfolio {
-	portfolio.Stocks = []Stock{
-		{Code: "NI225"}, // 日経平均
-		{Code: "7203"},  // トヨタ自動車(株)
-		{Code: "9984"},  // ソフトバンク
-		{Code: "6178"},  // 日本郵政(株)
-		{Code: "AAPL"},  // Apple Inc.
-	}
-	return portfolio
 }
