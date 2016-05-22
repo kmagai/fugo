@@ -11,19 +11,12 @@ const Fugorc = `/.fugorc`
 
 type Portfolio struct {
 	Stocks []Stock
-	path   string
-}
-
-// SetPortfolioFilePath returns portfolio setting file path
-func (portfolio *Portfolio) SetPortfolioFilePath(dirname string, filename string) *Portfolio {
-	portfolio.path = dirname + filename
-
-	return portfolio
+	Path   string
 }
 
 // GetPortfolio makes portfolio struct from fugorc
 func (portfolio *Portfolio) GetPortfolio() (*Portfolio, error) {
-	dat, err := ioutil.ReadFile(portfolio.path)
+	dat, err := ioutil.ReadFile(portfolio.Path)
 	if err != nil {
 		return portfolio, errors.New("portfolio file not found")
 	}
@@ -58,7 +51,7 @@ func (portfolio *Portfolio) Update() (*Portfolio, error) {
 
 // RemoveStock tries to removes stock from portfolio by the code like 'AAPL', '1234' etc
 func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
-	var newPortfolio Portfolio
+	var newStocks []Stock
 	var removedStock *Stock
 	var err error
 
@@ -66,20 +59,19 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 		if portfolio.Stocks[i].Code == codeToRemove {
 			removedStock = &portfolio.Stocks[i]
 		} else {
-			newPortfolio.Stocks = append(newPortfolio.Stocks, portfolio.Stocks[i])
+			newStocks = append(newStocks, portfolio.Stocks[i])
 		}
 	}
 	if removedStock == nil {
 		return removedStock, errors.New("stock not found in your portfolio")
 	}
-	newPortfolio.path = portfolio.path
-	err = newPortfolio.saveToFile()
+	portfolio.Stocks = newStocks
+	err = portfolio.saveToFile()
 	return removedStock, err
 }
 
 // AddStock tries to add stocks to portfolio by the code like 'AAPL', '1234' etc
 func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
-	var newPortfolio Portfolio
 	var err error
 
 	newStocks, err := getRemoteStock(codeToAdd)
@@ -90,9 +82,8 @@ func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	if duplicated := portfolio.hasDuplicate(newStocks); duplicated {
 		return nil, errors.New("You have already had it in your portfolio")
 	}
-	newPortfolio.path = portfolio.path
-	newPortfolio.Stocks = append(portfolio.Stocks, *newStocks...)
-	err = newPortfolio.saveToFile()
+	portfolio.Stocks = append(portfolio.Stocks, *newStocks...)
+	err = portfolio.saveToFile()
 	return newStocks, err
 }
 
@@ -153,6 +144,6 @@ func (portfolio *Portfolio) saveToFile() error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(portfolio.path, dat, 0644)
+	err = ioutil.WriteFile(portfolio.Path, dat, 0644)
 	return err
 }

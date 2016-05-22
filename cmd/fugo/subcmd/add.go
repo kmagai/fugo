@@ -22,7 +22,7 @@ func (c *Add) Run(args []string) int {
 		return common.ExitCodeError
 	}
 	portfolio := &fugo.Portfolio{}
-	portfolio = portfolio.SetPortfolioFilePath(usr.HomeDir, fugo.Fugorc)
+	portfolio.Path = usr.HomeDir + fugo.Fugorc
 	portfolio, err = portfolio.GetPortfolio()
 	if err != nil {
 		fmt.Println(err)
