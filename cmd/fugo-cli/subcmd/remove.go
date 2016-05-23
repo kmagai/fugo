@@ -6,14 +6,16 @@ import (
 	"strings"
 
 	"github.com/kmagai/fugo"
-	"github.com/kmagai/fugo/cmd/fugo/common"
+	"github.com/kmagai/fugo/cmd/fugo-cli/common"
 )
 
-type Check struct {
+type Remove struct {
 	Style
 }
 
-func (c *Check) Run(args []string) int {
+// Run to remove a stock specified with stock code
+func (c *Remove) Run(args []string) int {
+	stockToRemove := args[0]
 	usr, err := user.Current()
 	if err != nil {
 		fmt.Println(err)
@@ -30,26 +32,23 @@ func (c *Check) Run(args []string) int {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-
-	portfolio, err = portfolio.Update()
+	removed, err := portfolio.RemoveStock(stockToRemove)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	common.ShowPortfolio(portfolio)
-
+	// TODO: need better printing
+	fmt.Printf("removed: %s", removed)
 	return common.ExitCodeOK
 }
 
-func (c *Check) Synopsis() string {
-	return fmt.Sprint("Check stock data in your portfolio")
+func (c *Remove) Synopsis() string {
+	return "Remove stock from your portfolio"
 }
 
-func (c *Check) Help() string {
+func (c *Remove) Help() string {
 	helpText := `
-	fugo check
-	or
-	fugo
+	fugo remove [CODE]
 `
 	return strings.TrimSpace(helpText)
 }
