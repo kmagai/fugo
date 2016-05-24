@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kmagai/fugo/cmd/fugo-cli/common"
+	"github.com/kmagai/fugo/cmd/common"
 )
 
 type VersionCommand struct {

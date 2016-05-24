@@ -6,16 +6,14 @@ import (
 	"strings"
 
 	"github.com/kmagai/fugo"
-	"github.com/kmagai/fugo/cmd/fugo-cli/common"
+	"github.com/kmagai/fugo/cmd/common"
 )
 
-type Add struct {
+type Check struct {
 	Style
 }
 
-func (c *Add) Run(args []string) int {
-	stockToAdd := args[0]
-
+func (c *Check) Run(args []string) int {
 	usr, err := user.Current()
 	if err != nil {
 		fmt.Println(err)
@@ -33,23 +31,25 @@ func (c *Add) Run(args []string) int {
 		return common.ExitCodeError
 	}
 
-	added, err := portfolio.AddStock(stockToAdd)
+	portfolio, err = portfolio.Update()
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	// TODO: need better printing
-	fmt.Printf("Successfully added: %s", added)
+	common.ShowPortfolio(portfolio)
+
 	return common.ExitCodeOK
 }
 
-func (c *Add) Synopsis() string {
-	return fmt.Sprintf("Add stock to your portfolio")
+func (c *Check) Synopsis() string {
+	return fmt.Sprint("Check stock data in your portfolio")
 }
 
-func (c *Add) Help() string {
+func (c *Check) Help() string {
 	helpText := `
-	fugo add [CODE]
+	fugo check
+	or
+	fugo
 `
 	return strings.TrimSpace(helpText)
 }
