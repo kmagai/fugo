@@ -116,6 +116,7 @@ func getRemoteStock(stocks interface{}) (*[]Stock, error) {
 	if err != nil {
 		return nil, errors.New("failed to fetch")
 	}
+	defer res.Body.Close()
 
 	stockJSON, err := ioutil.ReadAll(res.Body)
 	if err != nil {
