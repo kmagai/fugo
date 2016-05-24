@@ -14,11 +14,13 @@ var (
 	priceChangeColor = color.New(color.FgBlack, color.Bold)
 )
 
+// ShowPortfolio prints stock data in portfolio
 func ShowPortfolio(portfolio *fugo.Portfolio) {
 	if len(portfolio.Stocks) > 0 {
 		for _, stock := range portfolio.Stocks {
 			printStock(stock)
-			defaultColor.Println("\n")
+			defaultColor.Println()
+			defaultColor.Println()
 		}
 	} else {
 		defaultColor.Println("No stock data found")

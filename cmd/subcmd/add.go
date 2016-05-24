@@ -9,10 +9,12 @@ import (
 	"github.com/kmagai/fugo/cmd/common"
 )
 
+// Add is the command name
 type Add struct {
 	Style
 }
 
+// Run specifies what this command does
 func (c *Add) Run(args []string) int {
 	stockToAdd := args[0]
 
@@ -38,15 +40,16 @@ func (c *Add) Run(args []string) int {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	// TODO: need better printing
-	fmt.Printf("Successfully added: %s", added)
+	fmt.Printf("Successfully added: %p", added)
 	return common.ExitCodeOK
 }
 
+// Synopsis tells what it does
 func (c *Add) Synopsis() string {
 	return fmt.Sprintf("Add stock to your portfolio")
 }
 
+// Help text
 func (c *Add) Help() string {
 	helpText := `
 	fugo add [CODE]

@@ -5,7 +5,7 @@ import (
 	"github.com/mitchellh/cli"
 )
 
-func Commands(style *subcmd.Style) map[string]cli.CommandFactory {
+func commands(style *subcmd.Style) map[string]cli.CommandFactory {
 	return map[string]cli.CommandFactory{
 		"check": func() (cli.Command, error) {
 			return &subcmd.Check{

@@ -57,7 +57,7 @@ func TestRemoveStock(t *testing.T) {
 		t.Errorf("could not removed the stock")
 	}
 	if defaultPortfolioStockLength-1 != len(portfolio.Stocks) {
-		t.Errorf("expected updated portfolio to have %i stocks but got %i", defaultPortfolioStockLength-1, len(portfolio.Stocks))
+		t.Errorf("expected updated portfolio to have %d stocks but got %d", defaultPortfolioStockLength-1, len(portfolio.Stocks))
 	}
 }
 
@@ -74,6 +74,6 @@ func TestAddStock(t *testing.T) {
 	}
 
 	if defaultPortfolioStockLength+1 != len(portfolio.Stocks) {
-		t.Errorf("expected updated portfolio to have %i stocks but got %i", defaultPortfolioStockLength+1, len(portfolio.Stocks))
+		t.Errorf("expected updated portfolio to have %d stocks but got %d", defaultPortfolioStockLength+1, len(portfolio.Stocks))
 	}
 }

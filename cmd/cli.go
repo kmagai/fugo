@@ -8,9 +8,9 @@ import (
 	"github.com/mitchellh/cli"
 )
 
-func Run(args []string) int {
+func run(args []string) int {
 	style := &subcmd.Style{
-		Ui: &cli.ColoredUi{
+		UI: &cli.ColoredUi{
 			InfoColor:  cli.UiColorBlue,
 			ErrorColor: cli.UiColorRed,
 			Ui: &cli.BasicUi{
@@ -20,10 +20,10 @@ func Run(args []string) int {
 			},
 		}}
 
-	return RunCustom(args, Commands(style))
+	return runCustom(args, commands(style))
 }
 
-func RunCustom(args []string, commands map[string]cli.CommandFactory) int {
+func runCustom(args []string, comm map[string]cli.CommandFactory) int {
 	// treat version as if it were a subcmd
 	for _, arg := range args {
 		if arg == "-v" || arg == "-version" || arg == "--version" {
@@ -44,7 +44,7 @@ func RunCustom(args []string, commands map[string]cli.CommandFactory) int {
 
 	cli := &cli.CLI{
 		Args:       args,
-		Commands:   commands,
+		commands:   comm,
 		Version:    Version,
 		HelpFunc:   cli.BasicHelpFunc(Name),
 		HelpWriter: os.Stdout,

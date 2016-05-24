@@ -9,10 +9,12 @@ import (
 	"github.com/kmagai/fugo/cmd/common"
 )
 
+// Check is the command name
 type Check struct {
 	Style
 }
 
+// Run specifies what this command does
 func (c *Check) Run(args []string) int {
 	usr, err := user.Current()
 	if err != nil {
@@ -41,10 +43,12 @@ func (c *Check) Run(args []string) int {
 	return common.ExitCodeOK
 }
 
+// Synopsis tells what it does
 func (c *Check) Synopsis() string {
 	return fmt.Sprint("Check stock data in your portfolio")
 }
 
+// Help text
 func (c *Check) Help() string {
 	helpText := `
 	fugo check

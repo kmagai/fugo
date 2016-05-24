@@ -8,6 +8,7 @@ import (
 	"github.com/kmagai/fugo/cmd/common"
 )
 
+// VersionCommand is the command name
 type VersionCommand struct {
 	Style
 
@@ -16,6 +17,7 @@ type VersionCommand struct {
 	Revision string
 }
 
+// Run specifies what this command does
 func (c *VersionCommand) Run(args []string) int {
 	var versionString bytes.Buffer
 
@@ -24,14 +26,16 @@ func (c *VersionCommand) Run(args []string) int {
 		fmt.Fprintf(&versionString, " (%s)", c.Revision)
 	}
 
-	c.Ui.Output(versionString.String())
+	c.UI.Output(versionString.String())
 	return common.ExitCodeOK
 }
 
+// Synopsis tells what it does
 func (c *VersionCommand) Synopsis() string {
 	return fmt.Sprintf("Print %s version and quit", c.Name)
 }
 
+// Help text
 func (c *VersionCommand) Help() string {
 	helpText := `
 	fugo help

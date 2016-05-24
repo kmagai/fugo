@@ -7,8 +7,10 @@ import (
 	"net/http"
 )
 
+// Fugorc is file name to specify fugo user setting file
 const Fugorc = `/.fugorc`
 
+// Portfolio stores user configurable portfolio
 type Portfolio struct {
 	Stocks []Stock
 	Path   string
@@ -55,7 +57,7 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 	var removedStock *Stock
 	var err error
 
-	for i, _ := range portfolio.Stocks {
+	for i := range portfolio.Stocks {
 		if portfolio.Stocks[i].Code == codeToRemove {
 			removedStock = &portfolio.Stocks[i]
 		} else {
@@ -87,7 +89,7 @@ func (portfolio *Portfolio) AddStock(codeToAdd string) (*[]Stock, error) {
 	return newStocks, err
 }
 
-// defaultPortfolio stock's are selected arbitrary
+// SetDefaultPortfolio stock's are selected arbitrary
 func (portfolio *Portfolio) SetDefaultPortfolio() (*Portfolio, error) {
 	portfolio.Stocks = []Stock{
 		{Code: "NI225"}, // 日経平均
@@ -120,7 +122,7 @@ func getRemoteStock(stocks interface{}) (*[]Stock, error) {
 		return nil, errors.New("couldn't properly read response. It could be a problem with a remote host")
 	}
 
-	return ParseToStocks(trimSlashes(stockJSON))
+	return parseToStocks(trimSlashes(stockJSON))
 }
 
 // hasDuplicate return true if portfolio has any stock
