@@ -9,22 +9,20 @@ import (
 
 var portfolio *Portfolio
 
-const testFugorc = `/.tfugorc`
+var usr, _ = user.Current()
+var path = usr.HomeDir + `/.tfugorc`
 
 func setDefaultPortfolio() *Portfolio {
-	usr, _ := user.Current()
-	portfolio = &Portfolio{}
-	portfolio.Path = usr.HomeDir + testFugorc
+	portfolio := NewPortfolio(path)
 	portfolio, _ = portfolio.SetDefaultPortfolio()
-	defer os.Remove(portfolio.Path)
+	defer os.Remove(path)
 	return portfolio
 }
 
 func TestGetPortfolio(t *testing.T) {
-	usr, err := user.Current()
-	portfolio := &Portfolio{}
-	portfolio.Path = usr.HomeDir + testFugorc
-	defer os.Remove(portfolio.Path)
+	var err error
+	portfolio := NewPortfolio(path)
+	defer os.Remove(path)
 	portfolio, _ = portfolio.SetDefaultPortfolio()
 	portfolio, err = portfolio.GetPortfolio()
 	if err != nil {

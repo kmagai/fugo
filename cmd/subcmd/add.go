@@ -23,8 +23,7 @@ func (c *Add) Run(args []string) int {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	portfolio := &fugo.Portfolio{}
-	portfolio.Path = usr.HomeDir + fugo.Fugorc
+	portfolio := fugo.NewPortfolio(usr.HomeDir + fugo.Fugorc)
 	portfolio, err = portfolio.GetPortfolio()
 	if err != nil {
 		fmt.Println(err)

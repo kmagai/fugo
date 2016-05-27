@@ -13,12 +13,17 @@ const Fugorc = `/.fugorc`
 // Portfolio stores user configurable portfolio
 type Portfolio struct {
 	Stocks []Stock
-	Path   string
+	path   string
+}
+
+// NewPortfolio is a Portfolio's Factory Method
+func NewPortfolio(path string) *Portfolio {
+	return &Portfolio{path: path}
 }
 
 // GetPortfolio makes portfolio struct from fugorc
 func (portfolio *Portfolio) GetPortfolio() (*Portfolio, error) {
-	dat, err := ioutil.ReadFile(portfolio.Path)
+	dat, err := ioutil.ReadFile(portfolio.path)
 	if err != nil {
 		return portfolio, errors.New("portfolio file not found")
 	}
@@ -147,6 +152,6 @@ func (portfolio *Portfolio) saveToFile() error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(portfolio.Path, dat, 0644)
+	err = ioutil.WriteFile(portfolio.path, dat, 0644)
 	return err
 }
