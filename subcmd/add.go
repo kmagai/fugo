@@ -5,9 +5,9 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/kmagai/fugo/adapter"
 	"github.com/kmagai/fugo/common"
 	"github.com/kmagai/fugo/lib"
+	"github.com/kmagai/googleFinance"
 )
 
 // Add is the command name
@@ -35,8 +35,9 @@ func (c *Add) Run(args []string) int {
 		return common.ExitCodeError
 	}
 
-	resource := adapter.NewGoogleAPI()
-	newStocks, err := fugo.GetStock(resource, stockToAdd)
+	source := googleFinance.API{}
+	newStocks, err := source.GetStocks(stockToAdd)
+
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
@@ -44,6 +45,7 @@ func (c *Add) Run(args []string) int {
 
 	// TODO: prompt to confirm
 
+	fmt.Println(newStocks)
 	added, err := portfolio.AddStock(newStocks)
 	if err != nil {
 		fmt.Println(err)

@@ -5,9 +5,9 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/kmagai/fugo/adapter"
 	"github.com/kmagai/fugo/common"
 	"github.com/kmagai/fugo/lib"
+	"github.com/kmagai/googleFinance"
 )
 
 // Check is the command name
@@ -33,9 +33,12 @@ func (c *Check) Run(args []string) int {
 			return common.ExitCodeError
 		}
 	}
-
-	resource := adapter.NewGoogleAPI()
-	stocksInPortfolio, err := fugo.GetStock(resource, portfolio.Stocks)
+	source := googleFinance.API{}
+	var codes []string
+	for _, stock := range portfolio.Stocks {
+		codes = append(codes, stock.Code)
+	}
+	stocksInPortfolio, err := source.GetStocks(codes)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError

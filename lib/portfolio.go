@@ -15,10 +15,13 @@ type Portfolio struct {
 	path   string
 }
 
-// Resource interface is for switching data resources
-type Resource interface {
-	GetStock(interface{}) ([]byte, error)
+type resource interface {
+	GetStocks(codes interface{}) (*[]Stock, error)
 }
+
+// // Stock interface
+// type Stock interface {
+// }
 
 // NewPortfolio is a Portfolio's Factory Method
 func NewPortfolio(path string) *Portfolio {
@@ -36,14 +39,9 @@ func (portfolio *Portfolio) GetPortfolio() (*Portfolio, error) {
 	return portfolio, err
 }
 
-// GetStock is get from resource and returns stock pointer
-func GetStock(resource Resource, stocks interface{}) (*[]Stock, error) {
-	stockJSON, err := resource.GetStock(stocks)
-	if err != nil {
-		return nil, errors.New("Failed to fetch from remote")
-	}
-	stock, err := ParseToStocks(stockJSON)
-	return stock, err
+// GetStocks is get from resource and returns stock pointer
+func GetStocks(res resource, stocks interface{}) (*[]Stock, error) {
+	return res.GetStocks(stocks)
 }
 
 // Update updates portfolio by Stock Code
@@ -58,7 +56,7 @@ func (portfolio *Portfolio) Update(updatedStock *[]Stock) (*Portfolio, error) {
 			portfolio.Stocks[i] = stock
 		}
 	}
-	
+
 	err := portfolio.saveToFile()
 	return portfolio, err
 }
