@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kmagai/fugo/cmd/common"
+	"github.com/kmagai/fugo/common"
 )
 
 // VersionCommand is the command name

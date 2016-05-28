@@ -16,15 +16,14 @@ Available commands are:
 ```
 
 ## Install
-To install, use `go get` and `go build` with `-o` option, which specifies the output file name to `fugo` not `cmd`
-
-Binary distribution has not yet supported, but will be coming soon.
+## Go
+To install it, just use `go get` and you should be able to use `fugo` if your PATH has properly be configured.
 
 ```bash
 $ go get github.com/kmagai/fugo
-$ cd $GOPATH/src/github.com/kmagai/fugo/cmd <---- go to cmd, fugo cli interface
-$ go build -o $GOPATH/bin/fugo              <---- install cmd as fugo
 ```
+
+Binary distribution has not yet supported, but will be coming soon.
 
 ## Contribution
 1. Fork ([https://github.com/kmagai/fugo/fork](https://github.com/kmagai/fugo/fork))

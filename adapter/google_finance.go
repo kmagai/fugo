@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"github.com/kmagai/fugo"
+
+	"github.com/kmagai/fugo/lib"
 )
 
 const googleURL = "http://www.google.com/finance/info?infotype=infoquoteall&q=%s"

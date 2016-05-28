@@ -4,9 +4,10 @@ import (
 	"math"
 
 	"fmt"
-	"github.com/kmagai/fugo"
-	"github.com/olekukonko/tablewriter"
 	"os"
+
+	"github.com/kmagai/fugo/lib"
+	"github.com/olekukonko/tablewriter"
 )
 
 // ShowPortfolio prints stock data in portfolio

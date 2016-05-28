@@ -5,18 +5,18 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/kmagai/fugo"
-	"github.com/kmagai/fugo/adapter"
-	"github.com/kmagai/fugo/cmd/common"
+	"github.com/kmagai/fugo/common"
+	"github.com/kmagai/fugo/lib"
 )
 
-// Check is the command name
-type Check struct {
+// Remove is the command name
+type Remove struct {
 	Style
 }
 
 // Run specifies what this command does
-func (c *Check) Run(args []string) int {
+func (c *Remove) Run(args []string) int {
+	stockToRemove := args[0]
 	usr, err := user.Current()
 	if err != nil {
 		fmt.Println(err)
@@ -24,44 +24,33 @@ func (c *Check) Run(args []string) int {
 	}
 	portfolio := fugo.NewPortfolio(usr.HomeDir + fugo.Fugorc)
 	portfolio, err = portfolio.GetPortfolio()
-	
 	if err != nil {
 		fmt.Println(err)
 		portfolio, err = portfolio.SetDefaultPortfolio()
-		if err != nil {
-			fmt.Println(err)
-			return common.ExitCodeError
-		}
 	}
-
-	resource := adapter.NewGoogleAPI()
-	stocksInPortfolio, err := fugo.GetStock(resource, portfolio.Stocks)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-
-	portfolio, err = portfolio.Update(stocksInPortfolio)
+	removed, err := portfolio.RemoveStock(stockToRemove)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	common.ShowPortfolio(portfolio)
-
+	// TODO: need better printing
+	fmt.Printf("removed: %p", removed)
 	return common.ExitCodeOK
 }
 
 // Synopsis tells what it does
-func (c *Check) Synopsis() string {
-	return fmt.Sprint("Check stock data in your portfolio")
+func (c *Remove) Synopsis() string {
+	return "Remove stock from your portfolio"
 }
 
 // Help text
-func (c *Check) Help() string {
+func (c *Remove) Help() string {
 	helpText := `
-	fugo check
-	or
-	fugo
+	fugo remove [CODE]
 `
 	return strings.TrimSpace(helpText)
 }

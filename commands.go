@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kmagai/fugo/cmd/subcmd"
+	"github.com/kmagai/fugo/subcmd"
 	"github.com/mitchellh/cli"
 )
 

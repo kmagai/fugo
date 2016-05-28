@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kmagai/fugo/cmd/subcmd"
+	"github.com/kmagai/fugo/subcmd"
 	"github.com/mitchellh/cli"
 )
 
