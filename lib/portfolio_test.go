@@ -27,11 +27,11 @@ func setDefaultPortfolio() *Portfolio {
 func TestGetPortfolio(t *testing.T) {
 	portfolio := NewPortfolio(path)
 	portfolioSaved := setDefaultPortfolio()
-	portfolioFromFile, err := portfolio.GetPortfolio()
+	err := portfolio.GetPortfolio()
 	if err != nil {
 		log.Fatalf("err: %s", err)
 	}
-	eq := reflect.DeepEqual(portfolioSaved, portfolioFromFile)
+	eq := reflect.DeepEqual(portfolioSaved, portfolio)
 
 	if !eq {
 		t.Errorf("Portfolio should properly be parsed")
@@ -69,15 +69,12 @@ func TestUpdate(t *testing.T) {
 
 func TestRemoveStock(t *testing.T) {
 	portfolio = setDefaultPortfolio()
-	portfolio, _ = portfolio.GetPortfolio()
+	portfolio.GetPortfolio()
 	defaultPortfolioStockLength := len(portfolio.Stocks)
 	first := portfolio.Stocks[0]
-	removedStock, err := portfolio.RemoveStock(first.Code)
+	err := portfolio.RemoveStock(first.Code)
 	if err != nil {
 		log.Fatalf("err: %s", err)
-	}
-	if removedStock == nil {
-		t.Errorf("could not removed the stock")
 	}
 	if defaultPortfolioStockLength-1 != len(portfolio.Stocks) {
 		t.Errorf("expected updated portfolio to have %d stocks but got %d", defaultPortfolioStockLength-1, len(portfolio.Stocks))
@@ -86,19 +83,16 @@ func TestRemoveStock(t *testing.T) {
 
 func TestAddStock(t *testing.T) {
 	portfolio = setDefaultPortfolio()
-	portfolio, _ = portfolio.GetPortfolio()
+	portfolio.GetPortfolio()
 	defaultPortfolioStockLength := len(portfolio.Stocks)
 
 	stock := &[]Stock{
 		Stock{Code: "ADD", Name: "ADD Inc.", Price: 1000, Change: 500, ChangePercent: 100, UpdatedAt: time.Now()},
 	}
 
-	addedStock, err := portfolio.AddStock(stock)
+	err := portfolio.AddStock(stock)
 	if err != nil {
 		log.Fatalf("err: %s", err)
-	}
-	if addedStock == nil {
-		t.Errorf("could not add the stock")
 	}
 
 	if defaultPortfolioStockLength+1 != len(portfolio.Stocks) {

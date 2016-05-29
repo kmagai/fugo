@@ -22,23 +22,23 @@ func (c *Remove) Run(args []string) int {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	portfolio := fugo.NewPortfolio(usr.HomeDir + fugo.Fugorc)
-	portfolio, err = portfolio.GetPortfolio()
+	pf := fugo.NewPortfolio(usr.HomeDir + fugo.Fugorc)
+	err = pf.GetPortfolio()
 	if err != nil {
 		fmt.Println(err)
-		portfolio, err = portfolio.SetDefaultPortfolio()
+		pf, err = pf.SetDefaultPortfolio()
 	}
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	removed, err := portfolio.RemoveStock(stockToRemove)
+	err = pf.RemoveStock(stockToRemove)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
 	// TODO: need better printing
-	fmt.Printf("removed: %p", removed)
+	fmt.Printf("removed: %s", stockToRemove)
 	return common.ExitCodeOK
 }
 

@@ -17,9 +17,9 @@ type Stock struct {
 	UpdatedAt     time.Time `json:"lt_dts,string"`
 }
 
-// ParseToStocks parses stock json data to its struct.
-func ParseToStocks(stockJSON []byte) (*[]Stock, error) {
-	s := bytes.NewReader(stockJSON)
+// ParseStocks parses stock json data to its struct.
+func ParseStocks(JSON []byte) (*[]Stock, error) {
+	s := bytes.NewReader(JSON)
 	var newStockData *[]Stock
 	dec := json.NewDecoder(s)
 	dec.Decode(&newStockData)

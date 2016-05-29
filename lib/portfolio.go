@@ -15,7 +15,7 @@ type Portfolio struct {
 	path   string
 }
 
-type resource interface {
+type resourcer interface {
 	GetStocks(codes interface{}) (*[]Stock, error)
 }
 
@@ -25,25 +25,24 @@ func NewPortfolio(path string) *Portfolio {
 }
 
 // GetPortfolio makes portfolio struct from fugorc.
-func (pf *Portfolio) GetPortfolio() (*Portfolio, error) {
+func (pf *Portfolio) GetPortfolio() error {
 	dat, err := ioutil.ReadFile(pf.path)
 	if err != nil {
-		return pf, errors.New("portfolio file not found")
+		return errors.New("portfolio file not found")
 	}
 
-	err = json.Unmarshal(dat, pf)
-	return pf, err
+	return json.Unmarshal(dat, pf)
 }
 
-// GetStocks is get from resource and returns stock pointer.
-func GetStocks(res resource, stocks interface{}) (*[]Stock, error) {
+// GetStocks is get from resourcer and returns stock pointer.
+func GetStocks(res resourcer, stocks interface{}) (*[]Stock, error) {
 	return res.GetStocks(stocks)
 }
 
-// Update updates portfolio by Stock Code.
-func (pf *Portfolio) Update(updatedStock *[]Stock) error {
+// Update updates portfolio by Stock Codes.
+func (pf *Portfolio) Update(sts *[]Stock) error {
 	codeStockMap := make(map[string]Stock)
-	for _, s := range *updatedStock {
+	for _, s := range *sts {
 		codeStockMap[s.Code] = s
 	}
 
@@ -58,33 +57,33 @@ func (pf *Portfolio) Update(updatedStock *[]Stock) error {
 }
 
 // RemoveStock tries to removes stock from portfolio by the code like 'AAPL', '1234' etc.
-func (pf *Portfolio) RemoveStock(codeToRemove string) (removedStock *Stock, err error) {
+func (pf *Portfolio) RemoveStock(code string) error {
 	var otherStocks []Stock
+	var removed bool
 
 	for i := range pf.Stocks {
-		if pf.Stocks[i].Code == codeToRemove {
-			removedStock = &pf.Stocks[i]
+		if pf.Stocks[i].Code == code {
+			removed = true
 		} else {
 			otherStocks = append(otherStocks, pf.Stocks[i])
 		}
 	}
-	if removedStock == nil {
-		return removedStock, errors.New("stock not found in your portfolio")
+	if !removed {
+		return errors.New("stock not found in your portfolio")
 	}
 	pf.Stocks = otherStocks
-	err = pf.saveToFile()
-	return removedStock, err
+	return pf.saveToFile()
 }
 
 // AddStock tries to add stocks to portfolio by the code like 'AAPL', '1234' etc.
-func (pf *Portfolio) AddStock(stocks *[]Stock) (*[]Stock, error) {
+func (pf *Portfolio) AddStock(stks *[]Stock) error {
 	var err error
-	if duplicated := pf.hasDuplicate(stocks); duplicated {
-		return nil, errors.New("You have already had it in your portfolio")
+	if duplicated := pf.hasDuplicate(stks); duplicated {
+		return errors.New("You have already had it in your portfolio")
 	}
-	pf.Stocks = append(pf.Stocks, *stocks...)
+	pf.Stocks = append(pf.Stocks, *stks...)
 	err = pf.saveToFile()
-	return stocks, err
+	return err
 }
 
 // SetDefaultPortfolio stock's are selected arbitrary.
@@ -101,14 +100,14 @@ func (pf *Portfolio) SetDefaultPortfolio() (*Portfolio, error) {
 }
 
 // hasDuplicate return true if portfolio has any stock.
-func (pf *Portfolio) hasDuplicate(stocks *[]Stock) bool {
-	portfolioMap := make(map[string]Stock)
+func (pf *Portfolio) hasDuplicate(stks *[]Stock) bool {
+	pfMap := make(map[string]Stock)
 	for _, s := range pf.Stocks {
-		portfolioMap[s.Code] = s
+		pfMap[s.Code] = s
 	}
 
-	for _, s := range *stocks {
-		if _, found := portfolioMap[s.Code]; found {
+	for _, s := range *stks {
+		if _, found := pfMap[s.Code]; found {
 			return true
 		}
 	}

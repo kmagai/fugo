@@ -22,12 +22,12 @@ func (c *Check) Run(args []string) int {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	portfolio := fugo.NewPortfolio(usr.HomeDir + fugo.Fugorc)
-	portfolio, err = portfolio.GetPortfolio()
+	pf := fugo.NewPortfolio(usr.HomeDir + fugo.Fugorc)
+	err = pf.GetPortfolio()
 
 	if err != nil {
 		fmt.Println(err)
-		portfolio, err = portfolio.SetDefaultPortfolio()
+		pf, err = pf.SetDefaultPortfolio()
 		if err != nil {
 			fmt.Println(err)
 			return common.ExitCodeError
@@ -35,21 +35,21 @@ func (c *Check) Run(args []string) int {
 	}
 	source := googleFinance.API{}
 	var codes []string
-	for _, stock := range portfolio.Stocks {
+	for _, stock := range pf.Stocks {
 		codes = append(codes, stock.Code)
 	}
-	stocksInPortfolio, err := source.GetStocks(codes)
+	stocks, err := source.GetStocks(codes)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
 
-	portfolio, err = portfolio.Update(stocksInPortfolio)
+	err = pf.Update(stocks)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	common.ShowPortfolio(portfolio)
+	common.ShowPortfolio(pf)
 
 	return common.ExitCodeOK
 }
