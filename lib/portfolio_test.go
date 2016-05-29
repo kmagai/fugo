@@ -43,19 +43,24 @@ func TestUpdate(t *testing.T) {
 
 	targetCode := portfolio.Stocks[1].Code
 	newName := "UPDATED Inc."
+	newPrice := 1000.0
 	stock := &[]Stock{
-		Stock{Code: targetCode, Name: newName, Price: 1000, Change: 500, ChangePercent: 100, UpdatedAt: time.Now()},
+		Stock{Code: targetCode, Name: newName, Price: newPrice, Change: 500, ChangePercent: 100, UpdatedAt: time.Now()},
 	}
-	updatedPortfolio, err := portfolio.Update(stock)
+	beforeUpdateStockLen := len(portfolio.Stocks)
+	err := portfolio.Update(stock)
 	if err != nil {
 		log.Fatalf("err: %s", err)
 	}
-	if len(updatedPortfolio.Stocks) != len(portfolio.Stocks) {
+	if beforeUpdateStockLen != len(portfolio.Stocks) {
 		t.Errorf("got greater stock data than expected")
 	}
-	for _, stock := range updatedPortfolio.Stocks {
+	for _, stock := range portfolio.Stocks {
 		if stock.Code == targetCode {
 			if stock.Name != newName {
+				t.Errorf("Name seems not to be updated")
+			}
+			if stock.Price != newPrice {
 				t.Errorf("Name seems not to be updated")
 			}
 		}
