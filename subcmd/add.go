@@ -10,12 +10,12 @@ import (
 	"github.com/kmagai/googleFinance"
 )
 
-// Add is the command name
+// Add is the command name.
 type Add struct {
 	Style
 }
 
-// Run specifies what this command does
+// Run specifies what this command does.
 func (c *Add) Run(args []string) int {
 	stockToAdd := args[0]
 
@@ -55,12 +55,12 @@ func (c *Add) Run(args []string) int {
 	return common.ExitCodeOK
 }
 
-// Synopsis tells what it does
+// Synopsis tells what it does.
 func (c *Add) Synopsis() string {
 	return fmt.Sprintf("Add stock to your portfolio")
 }
 
-// Help text
+// Help text.
 func (c *Add) Help() string {
 	helpText := `
 	fugo add [CODE]

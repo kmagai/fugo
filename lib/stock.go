@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Stock stores stock data
+// Stock stores stock data.
 type Stock struct {
 	Code          string    `json:"t"` // Depending on the market (f.g. integer code for TYO, ticker for NASDAQ...etc)
 	Name          string    `json:"name"`
@@ -17,7 +17,7 @@ type Stock struct {
 	UpdatedAt     time.Time `json:"lt_dts,string"`
 }
 
-// ParseToStocks parses stock json data to its struct
+// ParseToStocks parses stock json data to its struct.
 func ParseToStocks(stockJSON []byte) (*[]Stock, error) {
 	s := bytes.NewReader(stockJSON)
 	var newStockData *[]Stock

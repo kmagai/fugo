@@ -9,12 +9,12 @@ import (
 	"github.com/kmagai/fugo/lib"
 )
 
-// Remove is the command name
+// Remove is the command name.
 type Remove struct {
 	Style
 }
 
-// Run specifies what this command does
+// Run specifies what this command does.
 func (c *Remove) Run(args []string) int {
 	stockToRemove := args[0]
 	usr, err := user.Current()
@@ -42,7 +42,7 @@ func (c *Remove) Run(args []string) int {
 	return common.ExitCodeOK
 }
 
-// Synopsis tells what it does
+// Synopsis tells what it does.
 func (c *Remove) Synopsis() string {
 	return "Remove stock from your portfolio"
 }

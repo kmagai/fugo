@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 )
 
-// Fugorc is file name to specify fugo user setting file
-const Fugorc = `/.fugorc`
+// Fugorc is file name to specify fugo user setting file.
+const Fugorc = "/.fugorc"
 
-// Portfolio stores user configurable portfolio
+// Portfolio stores user configurable portfolio.
 type Portfolio struct {
 	Stocks []Stock
 	path   string
@@ -19,16 +19,12 @@ type resource interface {
 	GetStocks(codes interface{}) (*[]Stock, error)
 }
 
-// // Stock interface
-// type Stock interface {
-// }
-
-// NewPortfolio is a Portfolio's Factory Method
+// NewPortfolio is a Portfolio's Factory Method.
 func NewPortfolio(path string) *Portfolio {
 	return &Portfolio{path: path}
 }
 
-// GetPortfolio makes portfolio struct from fugorc
+// GetPortfolio makes portfolio struct from fugorc.
 func (portfolio *Portfolio) GetPortfolio() (*Portfolio, error) {
 	dat, err := ioutil.ReadFile(portfolio.path)
 	if err != nil {
@@ -39,12 +35,12 @@ func (portfolio *Portfolio) GetPortfolio() (*Portfolio, error) {
 	return portfolio, err
 }
 
-// GetStocks is get from resource and returns stock pointer
+// GetStocks is get from resource and returns stock pointer.
 func GetStocks(res resource, stocks interface{}) (*[]Stock, error) {
 	return res.GetStocks(stocks)
 }
 
-// Update updates portfolio by Stock Code
+// Update updates portfolio by Stock Code.
 func (portfolio *Portfolio) Update(updatedStock *[]Stock) (*Portfolio, error) {
 	codeStockMap := make(map[string]Stock)
 	for _, s := range *updatedStock {
@@ -61,7 +57,7 @@ func (portfolio *Portfolio) Update(updatedStock *[]Stock) (*Portfolio, error) {
 	return portfolio, err
 }
 
-// RemoveStock tries to removes stock from portfolio by the code like 'AAPL', '1234' etc
+// RemoveStock tries to removes stock from portfolio by the code like 'AAPL', '1234' etc.
 func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 	var newStocks []Stock
 	var removedStock *Stock
@@ -82,7 +78,7 @@ func (portfolio *Portfolio) RemoveStock(codeToRemove string) (*Stock, error) {
 	return removedStock, err
 }
 
-// AddStock tries to add stocks to portfolio by the code like 'AAPL', '1234' etc
+// AddStock tries to add stocks to portfolio by the code like 'AAPL', '1234' etc.
 func (portfolio *Portfolio) AddStock(stocks *[]Stock) (*[]Stock, error) {
 	var err error
 	if duplicated := portfolio.hasDuplicate(stocks); duplicated {
@@ -93,7 +89,7 @@ func (portfolio *Portfolio) AddStock(stocks *[]Stock) (*[]Stock, error) {
 	return stocks, err
 }
 
-// SetDefaultPortfolio stock's are selected arbitrary
+// SetDefaultPortfolio stock's are selected arbitrary.
 func (portfolio *Portfolio) SetDefaultPortfolio() (*Portfolio, error) {
 	portfolio.Stocks = []Stock{
 		{Code: "NI225"}, // 日経平均
@@ -106,7 +102,7 @@ func (portfolio *Portfolio) SetDefaultPortfolio() (*Portfolio, error) {
 	return portfolio, err
 }
 
-// hasDuplicate return true if portfolio has any stock
+// hasDuplicate return true if portfolio has any stock.
 func (portfolio *Portfolio) hasDuplicate(stocks *[]Stock) bool {
 	portfolioMap := make(map[string]Stock)
 	for _, s := range portfolio.Stocks {
@@ -121,7 +117,7 @@ func (portfolio *Portfolio) hasDuplicate(stocks *[]Stock) bool {
 	return false
 }
 
-// saveToFile saves portfolio struct into fugorc
+// saveToFile saves portfolio struct into fugorc.
 func (portfolio *Portfolio) saveToFile() error {
 	dat, err := json.Marshal(portfolio)
 	if err != nil {

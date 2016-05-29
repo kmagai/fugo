@@ -10,12 +10,12 @@ import (
 	"github.com/kmagai/googleFinance"
 )
 
-// Check is the command name
+// Check is the command name.
 type Check struct {
 	Style
 }
 
-// Run specifies what this command does
+// Run specifies what this command does.
 func (c *Check) Run(args []string) int {
 	usr, err := user.Current()
 	if err != nil {
@@ -54,7 +54,7 @@ func (c *Check) Run(args []string) int {
 	return common.ExitCodeOK
 }
 
-// Synopsis tells what it does
+// Synopsis tells what it does.
 func (c *Check) Synopsis() string {
 	return fmt.Sprint("Check stock data in your portfolio")
 }

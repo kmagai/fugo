@@ -10,7 +10,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-// ShowPortfolio prints stock data in portfolio
+// ShowPortfolio prints stock data in portfolio.
 func ShowPortfolio(portfolio *fugo.Portfolio) {
 	fmt.Println()
 	table := tablewriter.NewWriter(os.Stdout)
