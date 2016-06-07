@@ -37,7 +37,7 @@ func (c *Remove) Run(args []string) int {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-	// TODO: need better printing
+
 	fmt.Printf("removed: %s", stockToRemove)
 	return common.ExitCodeOK
 }

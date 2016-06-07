@@ -7,6 +7,7 @@ import (
 
 	"github.com/kmagai/fugo/common"
 	"github.com/kmagai/fugo/lib"
+	"github.com/kmagai/fugo/lib/interfaces"
 	"github.com/kmagai/googleFinance"
 )
 
@@ -33,23 +34,13 @@ func (c *Check) Run(args []string) int {
 			return common.ExitCodeError
 		}
 	}
-	source := googleFinance.API{}
-	var codes []string
-	for _, stock := range pf.Stocks {
-		codes = append(codes, stock.Code)
-	}
-	stocks, err := source.GetStocks(codes)
+	var api interfaces.Resourcer = googleFinance.API{}
+	stocks, err := api.GetStockers(pf.Codes)
 	if err != nil {
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
-
-	err = pf.Update(stocks)
-	if err != nil {
-		fmt.Println(err)
-		return common.ExitCodeError
-	}
-	common.ShowPortfolio(pf)
+	fmt.Println(stocks)
 
 	return common.ExitCodeOK
 }
