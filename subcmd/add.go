@@ -7,7 +7,7 @@ import (
 
 	"github.com/kmagai/fugo/common"
 	"github.com/kmagai/fugo/lib"
-	"github.com/kmagai/fugo/lib/interfaces"
+	"github.com/kmagai/fugo/lib/plugin"
 	"github.com/kmagai/googleFinance"
 )
 
@@ -37,7 +37,7 @@ func (c *Add) Run(args []string) int {
 	}
 
 	// TODO: make other APIs available
-	var api interfaces.Resourcer = googleFinance.API{}
+	var api plugin.Resourcer = googleFinance.API{}
 	newStocks, err := api.GetStocker(stockToAdd)
 	fmt.Println(newStocks)
 

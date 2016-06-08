@@ -7,7 +7,7 @@ import (
 
 	"github.com/kmagai/fugo/common"
 	"github.com/kmagai/fugo/lib"
-	"github.com/kmagai/fugo/lib/interfaces"
+	"github.com/kmagai/fugo/lib/plugin"
 	"github.com/kmagai/googleFinance"
 )
 
@@ -20,6 +20,7 @@ type Check struct {
 func (c *Check) Run(args []string) int {
 	usr, err := user.Current()
 	if err != nil {
+
 		fmt.Println(err)
 		return common.ExitCodeError
 	}
@@ -34,7 +35,7 @@ func (c *Check) Run(args []string) int {
 			return common.ExitCodeError
 		}
 	}
-	var api interfaces.Resourcer = googleFinance.API{}
+	var api plugin.Resourcer = googleFinance.API{}
 	stocks, err := api.GetStockers(pf.Codes)
 	if err != nil {
 		fmt.Println(err)

@@ -1,4 +1,4 @@
-package interfaces
+package plugin
 
 // Resourcer behaves as a stock information resource
 type Resourcer interface {

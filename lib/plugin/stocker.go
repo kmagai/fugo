@@ -1,4 +1,4 @@
-package interfaces
+package plugin
 
 // Stocker must be implemented to be used as Stock APIs
 type Stocker interface {
