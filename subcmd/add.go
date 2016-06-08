@@ -30,12 +30,13 @@ func (c *Add) Run(args []string) int {
 	if err != nil {
 		fmt.Println(err)
 		pf, err = pf.SetDefaultPortfolio()
-	}
-	if err != nil {
-		fmt.Println(err)
-		return common.ExitCodeError
+		if err != nil {
+			fmt.Println(err)
+			return common.ExitCodeError
+		}
 	}
 
+	// TODO: make other APIs available
 	var api interfaces.Resourcer = googleFinance.API{}
 	newStocks, err := api.GetStocker(stockToAdd)
 	fmt.Println(newStocks)

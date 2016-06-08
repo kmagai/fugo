@@ -31,12 +31,6 @@ func (pf *Portfolio) GetPortfolio() error {
 	return json.Unmarshal(dat, pf)
 }
 
-// Update updates portfolio by Stock Codes.
-func (pf *Portfolio) Update(codes []string) error {
-	pf.Codes = codes
-	return pf.saveToFile()
-}
-
 // RemoveStock tries to removes stock from portfolio by the code like 'AAPL', '1234' etc.
 func (pf *Portfolio) RemoveStock(code string) error {
 	var removed bool
