@@ -23,7 +23,7 @@ To install it, just use `go get` and you should be able to use `fugo` if your PA
 $ go get github.com/kmagai/fugo
 ```
 
-Binary distribution has not yet supported, but will be coming soon.
+Binary distribution has not yet been supported, but will be coming soon.
 
 ## Contribution
 1. Fork ([https://github.com/kmagai/fugo/fork](https://github.com/kmagai/fugo/fork))
